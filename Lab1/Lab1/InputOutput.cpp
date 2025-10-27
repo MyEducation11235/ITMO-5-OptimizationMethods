@@ -1,4 +1,4 @@
-п»ї#include <fstream>
+﻿#include <fstream>
 #include <sstream>
 #include <iomanip> //for std::setprecision
 #include "InputOutput.h"
@@ -107,7 +107,7 @@ LinearTask readLinearTask(const std::string &fileName) {
 
 	if (!fin.is_open()) {
 		fin.close();
-		std::cout << "РќРµ СѓРґР°С‘С‚СЃСЏ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р» РЅР° С‡С‚РµРЅРёРµ:" << outputDir + fileName << std::endl;
+		std::cout << "Не удаётся открыть файл на чтение:" << outputDir + fileName << std::endl;
 		return LinearTask({});
 	}
 
@@ -144,7 +144,7 @@ void writeLinearTask(const std::string &fileName, const LinearTask &linearTask, 
 
 	if (!fout.is_open()) {
 		fout.close();
-		std::cout << "РќРµ СѓРґР°С‘С‚СЃСЏ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р» РґР»СЏ Р·Р°РїРёСЃРё:" << outputDir + fileName << std::endl;
+		std::cout << "Не удаётся открыть файл для записи:" << outputDir + fileName << std::endl;
 		return;
 	}
 

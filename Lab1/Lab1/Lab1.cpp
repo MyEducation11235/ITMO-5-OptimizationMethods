@@ -1,4 +1,4 @@
-п»ї#include "InputOutput.h"
+﻿#include "InputOutput.h"
 #include <conio.h>
 
 int main()
@@ -11,8 +11,8 @@ int main()
 	const std::string outputFile = "test.txt";//inputFile;
 
 	const LinearTask task = readLinearTask(inputFile);
-	writeLinearTask(outputFile, task, "РЎС‡РёС‚Р°РЅРЅС‹Рµ СѓСЃР»РѕРІРёСЏ:", false);
+	writeLinearTask(outputFile, task, "Считанные условия:", false);
 
-	std::cout << "РќР°Р¶РјРёС‚Рµ Р»СЋР±СѓСЋ РєР»Р°РІРёС€Сѓ, С‡С‚РѕР±С‹ Р·Р°РєСЂС‹С‚СЊ СЌС‚Рѕ РѕРєРЅРѕвЂ¦";
+	std::cout << "Нажмите любую клавишу, чтобы закрыть это окно…";
 	_getch();
 }

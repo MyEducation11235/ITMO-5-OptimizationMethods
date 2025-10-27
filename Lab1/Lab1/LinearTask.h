@@ -1,4 +1,4 @@
-п»ї#pragma once
+﻿#pragma once
 
 #include "LinearCondition.h"
 
@@ -24,9 +24,9 @@ private:
 	bool isRightLen(int len) const;
 
 private:
-	const std::vector<std::string> m_variablesNames;	// РёРјРµРЅР° РїРµСЂРµРјРµРЅРЅС‹С…
-	CoefVector m_targetFunctionCoefs;					// С†РµР»РµРІР°СЏ С„СѓРЅРєС†РёР№
-	bool m_strivesForMin;								// РјРёРЅРёРјРёР·РёСЂРѕРІР°С‚СЊ?
-	std::vector<LinearCondition> m_conds;				// Р»РёРЅРµР№РЅС‹Рµ РѕРіСЂР°РЅРёС‡РµРЅРёСЏ
+	const std::vector<std::string> m_variablesNames;	// имена переменных
+	CoefVector m_targetFunctionCoefs;					// целевая функций
+	bool m_strivesForMin;								// минимизировать?
+	std::vector<LinearCondition> m_conds;				// линейные ограничения
 };
 
