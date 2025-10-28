@@ -29,6 +29,9 @@ int main()
 	if (basis.size() < task.conditionCount()) {
 		LinearTask supportiveTask = task;
 		supportiveTask.setTargetFunctionCoefs(CoefVector(supportiveTask.variablesCount(), 0));
+		for (const auto &el : basis) {
+			supportiveTask.setTargetFunctionCoef(el.second, 1);
+		}
 
 		for (LinearTask::ConditionIndex i = 0; i < supportiveTask.conditionCount(); i++)
 		{

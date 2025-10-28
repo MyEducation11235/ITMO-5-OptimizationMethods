@@ -56,7 +56,7 @@ bool SimplexMethodCalculator::oneCalcStep()
 		const Coef bn = m_rows[i].b();
 		const Coef bo = m_rows[minConditionIndex].b();
 
-		if (o <= 0 || (n > 0 && (bn / n) < (bo / o)))
+		if (le(o, 0) || (lt(0, n) && lt(bn / n, bo / o)))
 			minConditionIndex = i;
 	}
 
