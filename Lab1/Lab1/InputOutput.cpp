@@ -30,7 +30,7 @@ Coef toCoef(const std::string &s) {
 	return std::stof(s);
 }
 
-std::string toStrign(const Coef coef) {
+std::string toString(const Coef coef) {
 
 	std::stringstream stream;
 	stream << std::fixed << std::setprecision(2) << coef;
@@ -47,10 +47,10 @@ CoefVector toCoefVector(const std::vector<std::string> &sv) {
 	return res;
 }
 
-std::string toStrign(const CoefVector &coefs) {
+std::string toString(const CoefVector &coefs) {
 	std::string resultStr;
 	for (const Coef coef : coefs) {
-		resultStr += toStrign(coef);
+		resultStr += toString(coef);
 		resultStr.push_back(sep);
 	}
 	return resultStr;
@@ -80,7 +80,7 @@ LinearCondition::Condition toCondition(const std::string &s) {
 	return LinearCondition::Condition(res | LinearCondition::eq);
 }
 
-std::string toStrign(const LinearCondition::Condition cond) {
+std::string toString(const LinearCondition::Condition cond) {
 	if (cond == LinearCondition::ne)
 		return s_ne;
 
@@ -154,18 +154,19 @@ void writeLinearTask(const std::string &fileName, const LinearTask &linearTask, 
 	for (const std::string &name : linearTask.variablesNames()) {
 		resultStr += name;
 		resultStr.push_back(sep);
+		resultStr.push_back(sep);
 	}
 	resultStr.back() = stringEnd;
 
-	resultStr += toStrign(linearTask.targetFunctionCoefs());
+	resultStr += toString(linearTask.targetFunctionCoefs());
 	resultStr += (linearTask.strivesForMin() ? s_min : s_max);
 	resultStr.push_back(stringEnd);
 
 	for (const LinearCondition &cond : linearTask.conds()) {
-		resultStr += toStrign(cond.coefs);
-		resultStr += toStrign(cond.cond);
+		resultStr += toString(cond.coefs);
+		resultStr += toString(cond.cond);
 		resultStr.push_back(sep);
-		resultStr += toStrign(cond.target);
+		resultStr += toString(cond.target);
 		resultStr.push_back(stringEnd);
 	}
 	resultStr.push_back(stringEnd);
@@ -173,3 +174,137 @@ void writeLinearTask(const std::string &fileName, const LinearTask &linearTask, 
 	fout << resultStr;
 	fout.close();
 }
+
+void writeBasis(const std::string &fileName, const LinearTask &linearTask, bool append)
+{
+	std::ofstream fout(outputDir + fileName, append ? std::ios::app : std::ios::out);
+
+	if (!fout.is_open()) {
+		fout.close();
+		std::cout << "Не удаётся открыть файл для записи:" << outputDir + fileName << std::endl;
+		return;
+	}
+
+	std::string resultStr("Базис: ");
+
+	LinearTask::Basis basis = linearTask.currentBasis();
+
+	for (const auto &el : basis) {
+		resultStr += linearTask.variablesNames()[el.second];
+		resultStr += ", ";
+	}
+	resultStr.pop_back();
+	resultStr.back() = stringEnd;
+	resultStr.push_back(stringEnd);
+
+	fout << resultStr;
+	fout.close();
+}
+
+void writeCalculator(const std::string &fileName, const SimplexMethodCalculator &calculator, bool append)
+{
+	std::ofstream fout(outputDir + fileName, append ? std::ios::app : std::ios::out);
+
+	if (!fout.is_open()) {
+		fout.close();
+		std::cout << "Не удаётся открыть файл для записи:" << outputDir + fileName << std::endl;
+		return;
+	}
+
+	std::string resultStr;
+	resultStr.push_back(sep);
+
+	for (const auto &name : calculator.m_variablesNames) {
+		resultStr += name;
+		resultStr.push_back(sep);
+		resultStr.push_back(sep);
+	}
+	resultStr.push_back('b');
+	resultStr.push_back(stringEnd);
+
+	for (LinearTask::ConditionIndex i = 0; i <= calculator.m_basis.size(); i++)
+	{
+		if (i == calculator.m_basis.size()) {
+			resultStr.push_back(calculator.m_supportive ? 'S' : 'F');
+		}
+		else {
+			LinearTask::VariableIndex vari = calculator.m_basis.at(i);
+			resultStr += calculator.m_variablesNames[vari];
+		}
+		resultStr.push_back(sep);
+		for (const Coef &coef : calculator.m_rows[i].coefs) {
+			resultStr += toString(coef);
+			resultStr.push_back(sep);
+		}
+		resultStr.back() = stringEnd;
+	}
+	resultStr.push_back(stringEnd);
+
+	fout << resultStr;
+	fout.close();
+}
+
+void writeCalculatorResult(const std::string &fileName, const SimplexMethodCalculator &calculator, const LinearTask::VariableIndex startVariablesCount, bool append)
+{
+	std::ofstream fout(outputDir + fileName, append ? std::ios::app : std::ios::out);
+
+	if (!fout.is_open()) {
+		fout.close();
+		std::cout << "Не удаётся открыть файл для записи:" << outputDir + fileName << std::endl;
+		return;
+	}
+
+	std::string resultStr;
+	resultStr += "Ответ: ";
+
+	resultStr.push_back('(');
+	for (LinearTask::VariableIndex i = 0; i < startVariablesCount; i++)
+	{
+		resultStr += calculator.m_variablesNames[i];
+		resultStr.push_back(',');
+		resultStr.push_back(' ');
+	}
+	resultStr.pop_back();
+	resultStr.pop_back();
+	resultStr += ") = (";
+	CoefVector xVector;
+	xVector.resize(startVariablesCount, 0);
+	for (const auto &el : calculator.m_basis) {
+		if (el.second < startVariablesCount) {
+			xVector[el.second] = calculator.m_rows[el.first].coefs.back();
+		}
+	}
+
+
+	for (const auto coef : xVector) {
+		resultStr += toString(coef);
+		resultStr.push_back(',');
+		resultStr.push_back(' ');
+	}
+	resultStr.pop_back();
+	resultStr.pop_back();
+	resultStr.push_back(')');
+	resultStr.push_back(sep);
+	resultStr += "F = ";
+	resultStr += toString(calculator.m_rows.back().coefs.back());
+
+	resultStr.push_back(stringEnd);
+
+	fout << resultStr;
+	fout.close();
+}
+
+void writeString(const std::string &fileName, const std::string &str, bool append)
+{
+	std::ofstream fout(outputDir + fileName, append ? std::ios::app : std::ios::out);
+
+	if (!fout.is_open()) {
+		fout.close();
+		std::cout << "Не удаётся открыть файл для записи:" << outputDir + fileName << std::endl;
+		return;
+	}
+
+	fout << str;
+	fout.close();
+}
+

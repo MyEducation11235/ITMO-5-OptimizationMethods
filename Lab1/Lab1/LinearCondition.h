@@ -16,7 +16,7 @@ public:
 	};
 
 	CoefVector coefs;
-	Condition cond;
-	Coef target = Unknown;
+	Condition cond = Unknown;
+	Coef target;
 };
 
