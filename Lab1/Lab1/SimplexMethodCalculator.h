@@ -24,6 +24,8 @@ public:
 	bool continueLikeMainTask(const LinearTask &task);
 	Row &F();
 
+	void removeVariableIndex(const LinearTask::VariableIndex variablesIndex);
+
 	friend void writeCalculator(const std::string &fileName, const SimplexMethodCalculator &calculator, bool append);
 	friend void writeCalculatorResult(const std::string &fileName, const SimplexMethodCalculator &calculator, const LinearTask::VariableIndex startVariablesCount, bool append);
 

@@ -59,7 +59,7 @@ LinearTask::Basis LinearTask::currentBasis() const
 	{
 		ConditionIndex condIndex = condIndexWhereVariableIsBasis(i);
 		if (condIndex != INVALID_INDEX)
-			res.emplace(condIndex, i);
+			res[condIndex] = i;
 	}
 	return res;
 }

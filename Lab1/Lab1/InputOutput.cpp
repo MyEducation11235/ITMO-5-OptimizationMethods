@@ -286,7 +286,14 @@ void writeCalculatorResult(const std::string &fileName, const SimplexMethodCalcu
 	resultStr.push_back(')');
 	resultStr.push_back(sep);
 	resultStr += "F = ";
-	resultStr += toString(calculator.m_rows.back().coefs.back());
+
+	Coef resultF = 0;
+	for (LinearTask::VariableIndex i = 0; i < startVariablesCount; i++)
+	{
+		resultF += xVector[i] * calculator.m_targetFunctionCoefs[i];
+	}
+	//resultStr += toString(abs(calculator.m_rows.back().coefs.back()));
+	resultStr += toString(resultF);
 
 	resultStr.push_back(stringEnd);
 

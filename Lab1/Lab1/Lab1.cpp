@@ -7,7 +7,14 @@ int main()
 	//SetConsoleOutputCP(1251);
 	std::system("chcp 1251");
 
-	const std::string inputFile = "2.txt";
+	std::string inputFile;// = "main.txt";
+
+	if (inputFile.empty()) {
+		std::cout << "Ведите название исодного файла: ";
+		std::cin >> inputFile;
+		if (inputFile.find(".txt") == -1)
+			inputFile += ".txt";
+	}
 	const std::string outputFile = inputFile;
 
 	int stage = 1;
@@ -29,9 +36,6 @@ int main()
 	if (basis.size() < task.conditionCount()) {
 		LinearTask supportiveTask = task;
 		supportiveTask.setTargetFunctionCoefs(CoefVector(supportiveTask.variablesCount(), 0));
-		for (const auto &el : basis) {
-			supportiveTask.setTargetFunctionCoef(el.second, 1);
-		}
 
 		for (LinearTask::ConditionIndex i = 0; i < supportiveTask.conditionCount(); i++)
 		{
