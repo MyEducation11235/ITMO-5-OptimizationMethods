@@ -70,8 +70,8 @@ LinearTask::ConditionIndex LinearTask::condIndexWhereVariableIsBasis(const Varia
 	for (ConditionIndex row = 0; row < conditionCount(); row++)
 	{
 		if (!eq(m_conds[row].coefs[variableIndex], 0)) {
-			if (!eq(m_conds[row].coefs[variableIndex], 1))
-				return INVALID_INDEX;
+			/*if (!eq(m_conds[row].coefs[variableIndex], 1))
+				return INVALID_INDEX;*/
 
 			if (res != INVALID_INDEX) {
 				return INVALID_INDEX; // встречается в двух строках - переменная не базисная

@@ -108,7 +108,7 @@ LinearTask readLinearTask(const std::string &fileName) {
 	if (!fin.is_open()) {
 		fin.close();
 		std::cout << "Не удаётся открыть файл на чтение:" << outputDir + fileName << std::endl;
-		return LinearTask({});
+		return LinearTask();
 	}
 
 	std::string readedLine;
@@ -275,27 +275,41 @@ void writeCalculatorResult(const std::string &fileName, const SimplexMethodCalcu
 		}
 	}
 
-
-	for (const auto coef : xVector) {
-		resultStr += toString(coef);
-		resultStr.push_back(',');
-		resultStr.push_back(' ');
-	}
-	resultStr.pop_back();
-	resultStr.pop_back();
-	resultStr.push_back(')');
-	resultStr.push_back(sep);
-	resultStr += "F = ";
-
-	Coef resultF = 0;
-	for (LinearTask::VariableIndex i = 0; i < startVariablesCount; i++)
+	bool isValid = true;
+	// проверка на валидность результатов
+	for (LinearTask::ConditionIndex i = 0; i < calculator.m_startTask.conditionCount(); i++)
 	{
-		resultF += xVector[i] * calculator.m_mainTargetFunctionCoefs[i];
+		if (!calculator.m_startTask.conds()[i].isFulfilled(xVector)) {
+			isValid = false;
+			break;
+		}
 	}
-	//resultStr += toString(abs(calculator.m_rows.back().coefs.back()));
-	if (reversed)
-		resultF *= -1;
-	resultStr += toString(resultF);
+
+	if (isValid) {
+		for (const auto coef : xVector) {
+			resultStr += toString(coef);
+			resultStr.push_back(',');
+			resultStr.push_back(' ');
+		}
+		resultStr.pop_back();
+		resultStr.pop_back();
+		resultStr.push_back(')');
+		resultStr.push_back(sep);
+		resultStr += "F = ";
+
+		Coef resultF = 0;
+		for (LinearTask::VariableIndex i = 0; i < startVariablesCount; i++)
+		{
+			resultF += xVector[i] * calculator.m_mainTargetFunctionCoefs[i];
+		}
+		//resultStr += toString(abs(calculator.m_rows.back().coefs.back()));
+		if (reversed)
+			resultF *= -1;
+		resultStr += toString(resultF);
+	}
+	else {
+		resultStr = "Область допустимых решений пуста - решения нет.";
+	}
 
 	resultStr.push_back(stringEnd);
 

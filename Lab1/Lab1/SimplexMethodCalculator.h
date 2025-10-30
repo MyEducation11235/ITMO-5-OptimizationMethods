@@ -34,9 +34,10 @@ public:
 	friend void writeCalculatorResult(const std::string &fileName, const SimplexMethodCalculator &calculator, const LinearTask::VariableIndex startVariablesCount, const bool reversed, bool append);
 
 private:
+	LinearTask m_startTask;
 	LinearTask::Basis m_basis;
 	CoefVector m_mainTargetFunctionCoefs;
 	std::vector<std::string> m_variablesNames;			// имена переменных
 	std::vector<Row> m_rows;				// вся таблица, последния строчка - F
-	bool m_supportive;
+	bool m_supportive = false;
 };

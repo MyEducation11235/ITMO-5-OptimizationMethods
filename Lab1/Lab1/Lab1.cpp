@@ -53,18 +53,18 @@ int main()
 
 		writeString(outputFile, std::to_string(stage++) + ". Решение вспомогательной задачи:\n");
 		if (!fullCalculate()) {
-			writeString(outputFile, "Критерий не достигает конечного значения.\n");
+			writeString(outputFile, "Критерий не достигает конечного значения - решения нет.\n");
 			goto calculationEnd;
 		}
 
 		if (!calculator.continueLikeMainTask()) {
-			writeString(outputFile, "Не удалось перейти к основному решению.\n");
+			writeString(outputFile, "Не удалось перейти к основному решению - решения нет.\n");
 			goto calculationEnd;
 		}
 	}
 	writeString(outputFile, std::to_string(stage++) + ". Решение основной задачи:\n");
 	if (!fullCalculate()) {
-		writeString(outputFile, "Критерий не достигает конечного значения.\n");
+		writeString(outputFile, "Критерий не достигает конечного значения - решения нет.\n");
 		goto calculationEnd;
 	}
 

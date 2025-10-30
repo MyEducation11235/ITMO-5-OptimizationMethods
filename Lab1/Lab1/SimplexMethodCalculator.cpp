@@ -6,6 +6,8 @@ SimplexMethodCalculator::SimplexMethodCalculator()
 
 LinearTask SimplexMethodCalculator::setLinearTask(const LinearTask &linearTask)
 {
+	m_startTask = linearTask;
+
 	LinearTask::Basis basis = linearTask.currentBasis();
 	// требуется ли вспомогательная задача
 	m_supportive = basis.size() < linearTask.conditionCount();

@@ -11,7 +11,7 @@ public:
 	using VariableIndex = size_t;
 	using Basis = std::map<ConditionIndex, VariableIndex>;
 public:
-	LinearTask(std::vector<std::string> &&variablesNames);
+	LinearTask(std::vector<std::string> &&variablesNames = {});
 
 	std::string nextVariableName() const;
 
