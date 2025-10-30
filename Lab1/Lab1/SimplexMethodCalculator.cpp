@@ -104,18 +104,18 @@ bool SimplexMethodCalculator::continueLikeMainTask()
 {
 	if (!m_supportive)
 		return false;
-
 	m_supportive = false;
 
+	std::set<LinearTask::ConditionIndex> ignor;
+	for (LinearTask::ConditionIndex rowIndex = 0; rowIndex < m_rows.size() - 1; rowIndex++) {
+		ignor.insert(m_basis[rowIndex]);
+	}
 
 	for (LinearTask::VariableIndex i = F().size() - 2; i >= m_mainTargetFunctionCoefs.size(); --i)
 		removeVariableIndex(i);
-
-
-	std::set<LinearTask::ConditionIndex> ignor;
-
-	for (LinearTask::ConditionIndex rowIndex = 0; rowIndex < m_rows.size() - 1; rowIndex++) {
-		ignor.insert(m_basis[rowIndex]);
+	for (const auto el : ignor) {
+		if (el >= m_variablesNames.size())
+			return false;
 	}
 
 	for (LinearTask::VariableIndex i = 0; i < F().size(); i++)

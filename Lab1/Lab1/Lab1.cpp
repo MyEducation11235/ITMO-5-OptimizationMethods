@@ -35,26 +35,42 @@ int main()
 
 	SimplexMethodCalculator calculator;
 	LinearTask supportiveTask = calculator.setLinearTask(task);
+
+	const auto fullCalculate = [&outputFile, &calculator](const size_t maxIterCount = 100) -> bool {
+		writeCalculator(outputFile, calculator);
+		size_t i = 0;
+		for (; (i < maxIterCount) && calculator.oneCalcStep(); i++)
+		{
+			writeCalculator(outputFile, calculator);
+		}
+
+		return i < maxIterCount;
+	};
+
 	if (calculator.supportive()) {
 		writeLinearTask(outputFile, supportiveTask, std::to_string(stage++) + ". Формирование вспомогательной задачи:");
 		writeBasis(outputFile, supportiveTask);
 
 		writeString(outputFile, std::to_string(stage++) + ". Решение вспомогательной задачи:\n");
-		writeCalculator(outputFile, calculator);
-		while (calculator.oneCalcStep()) {
-			writeCalculator(outputFile, calculator);
+		if (!fullCalculate()) {
+			writeString(outputFile, "Критерий не достигает конечного значения.\n");
+			goto calculationEnd;
 		}
 
-		calculator.continueLikeMainTask();
+		if (!calculator.continueLikeMainTask()) {
+			writeString(outputFile, "Не удалось перейти к основному решению.\n");
+			goto calculationEnd;
+		}
 	}
 	writeString(outputFile, std::to_string(stage++) + ". Решение основной задачи:\n");
-	writeCalculator(outputFile, calculator);
-	while (calculator.oneCalcStep()) {
-		writeCalculator(outputFile, calculator);
+	if (!fullCalculate()) {
+		writeString(outputFile, "Критерий не достигает конечного значения.\n");
+		goto calculationEnd;
 	}
 
 	writeCalculatorResult(outputFile, calculator, startVariablesCount, reversed);
 
+calculationEnd:
 	std::cout << "Нажмите любую клавишу, чтобы закрыть это окно…";
 	_getch();
 }
