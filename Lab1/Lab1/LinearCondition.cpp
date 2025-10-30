@@ -2,6 +2,9 @@
 
 bool LinearCondition::isFulfilled(const CoefVector &currentCoefs) const
 {
+	if (coefs.size() != currentCoefs.size())
+		return false;
+
 	Coef calculated = 0;
 	for (size_t i = 0; i < currentCoefs.size(); i++)
 	{
@@ -11,17 +14,17 @@ bool LinearCondition::isFulfilled(const CoefVector &currentCoefs) const
 	switch (cond)
 	{
 	case LinearCondition::eq:
-		return calculated == target;
+		return ::eq(calculated, target);
 	case LinearCondition::ne:
-		return calculated != target;
+		return ::ne(calculated, target);
 	case LinearCondition::gt:
-		return calculated > target;
+		return ::gt(calculated, target);
 	case LinearCondition::ge:
-		return calculated >= target;
+		return ::ge(calculated, target);
 	case LinearCondition::lt:
-		return calculated < target;
+		return ::lt(calculated, target);
 	case LinearCondition::le:
-		return calculated <= target;
+		return ::le(calculated, target);
 	case LinearCondition::Unknown:
 	default:
 		return false;

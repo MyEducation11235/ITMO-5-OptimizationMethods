@@ -268,11 +268,11 @@ void writeCalculatorResult(const std::string &fileName, const SimplexMethodCalcu
 	resultStr.pop_back();
 	resultStr += ") = (";
 	CoefVector xVector;
-	xVector.resize(startVariablesCount, 0);
+	xVector.resize(calculator.m_startTask.variablesCount(), 0);
 	for (const auto &el : calculator.m_basis) {
-		if (el.second < startVariablesCount) {
-			xVector[el.second] = calculator.m_rows[el.first].coefs.back();
-		}
+		//if (el.second < startVariablesCount) {
+		xVector[el.second] = calculator.m_rows[el.first].coefs.back();
+		//}
 	}
 
 	bool isValid = true;
@@ -286,8 +286,9 @@ void writeCalculatorResult(const std::string &fileName, const SimplexMethodCalcu
 	}
 
 	if (isValid) {
-		for (const auto coef : xVector) {
-			resultStr += toString(coef);
+		for (LinearTask::VariableIndex i = 0; i < startVariablesCount; i++)
+		{
+			resultStr += toString(xVector[i]);
 			resultStr.push_back(',');
 			resultStr.push_back(' ');
 		}
