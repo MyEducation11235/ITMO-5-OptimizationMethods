@@ -7,11 +7,13 @@ int main()
 	//SetConsoleOutputCP(1251);
 	std::system("chcp 1251");
 
-	std::string inputFile;// = "main.txt";
+	std::string inputFile;
 
 	if (inputFile.empty()) {
-		std::cout << "Ведите название исодного файла: ";
-		std::cin >> inputFile;
+		std::cout << "Ведите название исходного файла (относительно папки ./input/): ";
+		while (inputFile.empty()) {
+			std::cin >> inputFile;
+		}
 		if (inputFile.find(".txt") == -1)
 			inputFile += ".txt";
 	}
