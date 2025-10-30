@@ -10,6 +10,6 @@ void writeLinearTask(const std::string &fileName, const LinearTask &linearTask, 
 void writeBasis(const std::string &fileName, const LinearTask &linearTask, bool append = true);
 
 void writeCalculator(const std::string &fileName, const SimplexMethodCalculator &calculator, bool append = true);
-void writeCalculatorResult(const std::string &fileName, const SimplexMethodCalculator &calculator, const LinearTask::VariableIndex startVariablesCount, bool append = true);
+void writeCalculatorResult(const std::string &fileName, const SimplexMethodCalculator &calculator, const LinearTask::VariableIndex startVariablesCount, bool reversed, bool append = true);
 
 void writeString(const std::string &fileName, const std::string &str, bool append = true);

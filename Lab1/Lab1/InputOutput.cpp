@@ -244,7 +244,7 @@ void writeCalculator(const std::string &fileName, const SimplexMethodCalculator 
 	fout.close();
 }
 
-void writeCalculatorResult(const std::string &fileName, const SimplexMethodCalculator &calculator, const LinearTask::VariableIndex startVariablesCount, bool append)
+void writeCalculatorResult(const std::string &fileName, const SimplexMethodCalculator &calculator, const LinearTask::VariableIndex startVariablesCount, const bool reversed, bool append)
 {
 	std::ofstream fout(outputDir + fileName, append ? std::ios::app : std::ios::out);
 
@@ -290,9 +290,11 @@ void writeCalculatorResult(const std::string &fileName, const SimplexMethodCalcu
 	Coef resultF = 0;
 	for (LinearTask::VariableIndex i = 0; i < startVariablesCount; i++)
 	{
-		resultF += xVector[i] * calculator.m_targetFunctionCoefs[i];
+		resultF += xVector[i] * calculator.m_mainTargetFunctionCoefs[i];
 	}
 	//resultStr += toString(abs(calculator.m_rows.back().coefs.back()));
+	if (reversed)
+		resultF *= -1;
 	resultStr += toString(resultF);
 
 	resultStr.push_back(stringEnd);

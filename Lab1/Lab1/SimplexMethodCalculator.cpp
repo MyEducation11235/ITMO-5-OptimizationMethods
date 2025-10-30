@@ -1,12 +1,35 @@
 #include "SimplexMethodCalculator.h"
 
-SimplexMethodCalculator::SimplexMethodCalculator(const LinearTask &linearTask, const bool supportive)
+SimplexMethodCalculator::SimplexMethodCalculator()
 {
-	m_variablesNames = linearTask.variablesNames();
-	m_basis = m_startBasis = linearTask.currentBasis();
-	m_targetFunctionCoefs = linearTask.targetFunctionCoefs();
-	m_supportive = supportive;
-	for (const auto &cond : linearTask.conds()) {
+}
+
+LinearTask SimplexMethodCalculator::setLinearTask(const LinearTask &linearTask)
+{
+	LinearTask::Basis basis = linearTask.currentBasis();
+	// требуется ли вспомогательная задача
+	m_supportive = basis.size() < linearTask.conditionCount();
+	m_mainTargetFunctionCoefs = linearTask.targetFunctionCoefs();
+
+	LinearTask supportiveTask = linearTask;
+	if (m_supportive) {
+		supportiveTask.setStrivesForMin(true);
+		supportiveTask.setTargetFunctionCoefs(CoefVector(supportiveTask.variablesCount(), 0));
+
+		for (LinearTask::ConditionIndex i = 0; i < supportiveTask.conditionCount(); i++)
+		{
+			const auto found = basis.find(i);
+			// нужно добавить переменную в эту строку
+			if (found == basis.end()) {
+				supportiveTask.addVariableInCond(i);
+				supportiveTask.setTargetFunctionCoef(supportiveTask.variablesCount() - 1, 1);
+			}
+		}
+	}
+
+	m_variablesNames = supportiveTask.variablesNames();
+	m_basis = supportiveTask.currentBasis();
+	for (const auto &cond : supportiveTask.conds()) {
 		m_rows.push_back(Row{});
 		for (const auto coef : cond.coefs) {
 			m_rows.back().coefs.push_back(coef);
@@ -14,17 +37,19 @@ SimplexMethodCalculator::SimplexMethodCalculator(const LinearTask &linearTask, c
 		m_rows.back().coefs.push_back(cond.target);
 	}
 	m_rows.push_back(Row{});
-	if (supportive) {
-		m_rows.back().coefs.resize(linearTask.variablesCount() + 1, 0);
-		for (LinearTask::ConditionIndex j = 0; j < linearTask.conditionCount(); j++)
+	if (m_supportive) {
+		m_rows.back().coefs.resize(supportiveTask.variablesCount() + 1, 0);
+		for (LinearTask::ConditionIndex j = 0; j < supportiveTask.conditionCount(); j++)
 		{
 			m_rows.back() -= m_rows[j];
 		}
 	}
 	else {
-		m_rows.back().coefs = linearTask.targetFunctionCoefs();
-		m_rows.back().coefs.push_back(0);
+		m_rows.back().coefs = m_mainTargetFunctionCoefs;
+		m_rows.back().coefs.push_back(0); // b
 	}
+
+	return supportiveTask;
 }
 
 bool SimplexMethodCalculator::oneCalcStep()
@@ -75,7 +100,7 @@ bool SimplexMethodCalculator::oneCalcStep()
 	return true;
 }
 
-bool SimplexMethodCalculator::continueLikeMainTask(const LinearTask &task)
+bool SimplexMethodCalculator::continueLikeMainTask()
 {
 	if (!m_supportive)
 		return false;
@@ -83,7 +108,7 @@ bool SimplexMethodCalculator::continueLikeMainTask(const LinearTask &task)
 	m_supportive = false;
 
 
-	for (LinearTask::VariableIndex i = F().size() - 2; i >= task.variablesCount(); --i)
+	for (LinearTask::VariableIndex i = F().size() - 2; i >= m_mainTargetFunctionCoefs.size(); --i)
 		removeVariableIndex(i);
 
 
@@ -99,11 +124,11 @@ bool SimplexMethodCalculator::continueLikeMainTask(const LinearTask &task)
 			continue;
 
 		Coef res = 0;
-		if (i < task.targetFunctionCoefs().size())
-			res = task.targetFunctionCoefs()[i];
+		if (i < m_mainTargetFunctionCoefs.size())
+			res = m_mainTargetFunctionCoefs[i];
 		for (LinearTask::ConditionIndex rowIndex = 0; rowIndex < m_rows.size() - 1; rowIndex++) {
-			if (m_basis[rowIndex] < task.targetFunctionCoefs().size())
-				res -= task.targetFunctionCoefs()[m_basis[rowIndex]] * m_rows[rowIndex].coefs[i];
+			if (m_basis[rowIndex] < m_mainTargetFunctionCoefs.size())
+				res -= m_mainTargetFunctionCoefs[m_basis[rowIndex]] * m_rows[rowIndex].coefs[i];
 		}
 
 		F().coefs[i] = res;
@@ -119,10 +144,14 @@ SimplexMethodCalculator::Row &SimplexMethodCalculator::F()
 
 void SimplexMethodCalculator::removeVariableIndex(const LinearTask::VariableIndex variablesIndex)
 {
-	m_targetFunctionCoefs.erase(m_targetFunctionCoefs.begin() + variablesIndex);
 	m_variablesNames.erase(m_variablesNames.begin() + variablesIndex);
 	for (auto& row : m_rows)
 		row.coefs.erase(row.coefs.begin() + variablesIndex);
+}
+
+bool SimplexMethodCalculator::supportive() const
+{
+	return m_supportive;
 }
 
 SimplexMethodCalculator::Row &SimplexMethodCalculator::Row::operator-=(const Row &other)

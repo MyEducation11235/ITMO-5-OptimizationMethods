@@ -18,21 +18,24 @@ class SimplexMethodCalculator {
 	};
 
 public:
-	SimplexMethodCalculator(const LinearTask &linearTask, const bool supportive);
-
+	SimplexMethodCalculator();
+	// возвращает ту задачу, которую будет решать (это может быть вспомогательная задача)
+	LinearTask setLinearTask(const LinearTask &linearTask);
+	
 	bool oneCalcStep();
-	bool continueLikeMainTask(const LinearTask &task);
+	bool continueLikeMainTask();
 	Row &F();
 
 	void removeVariableIndex(const LinearTask::VariableIndex variablesIndex);
 
+	bool supportive() const;
+
 	friend void writeCalculator(const std::string &fileName, const SimplexMethodCalculator &calculator, bool append);
-	friend void writeCalculatorResult(const std::string &fileName, const SimplexMethodCalculator &calculator, const LinearTask::VariableIndex startVariablesCount, bool append);
+	friend void writeCalculatorResult(const std::string &fileName, const SimplexMethodCalculator &calculator, const LinearTask::VariableIndex startVariablesCount, const bool reversed, bool append);
 
 private:
 	LinearTask::Basis m_basis;
-	LinearTask::Basis m_startBasis;
-	CoefVector m_targetFunctionCoefs;
+	CoefVector m_mainTargetFunctionCoefs;
 	std::vector<std::string> m_variablesNames;			// имена переменных
 	std::vector<Row> m_rows;				// вся таблица, последния строчка - F
 	bool m_supportive;

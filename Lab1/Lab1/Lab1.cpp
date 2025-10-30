@@ -23,34 +23,21 @@ int main()
 	writeLinearTask(outputFile, task, std::to_string(stage++) + ". Считанные условия:", false);
 
 	const LinearTask::VariableIndex startVariablesCount = task.variablesCount();
+	bool reversed = !task.strivesForMin();
 
-	if (!task.strivesForMin())
+	if (reversed) {
 		task.reverseStrives();
+	}
 	task.equalizedConditions();
 
 	writeLinearTask(outputFile, task, std::to_string(stage++) + ". Приведеная к каноническому виду:");
 	writeBasis(outputFile, task);
 
-	LinearTask::Basis basis = task.currentBasis();
-	// требуется ли вспомогательная задача
-	if (basis.size() < task.conditionCount()) {
-		LinearTask supportiveTask = task;
-		supportiveTask.setTargetFunctionCoefs(CoefVector(supportiveTask.variablesCount(), 0));
-
-		for (LinearTask::ConditionIndex i = 0; i < supportiveTask.conditionCount(); i++)
-		{
-			const auto found = basis.find(i);
-			// нужно добавить переменную в эту строку
-			if (found == basis.end()) {
-				supportiveTask.addVariableInCond(i);
-				supportiveTask.setTargetFunctionCoef(supportiveTask.variablesCount() - 1, 1);
-			}
-		}
-
+	SimplexMethodCalculator calculator;
+	LinearTask supportiveTask = calculator.setLinearTask(task);
+	if (calculator.supportive()) {
 		writeLinearTask(outputFile, supportiveTask, std::to_string(stage++) + ". Формирование вспомогательной задачи:");
 		writeBasis(outputFile, supportiveTask);
-
-		SimplexMethodCalculator calculator(supportiveTask, true);
 
 		writeString(outputFile, std::to_string(stage++) + ". Решение вспомогательной задачи:\n");
 		writeCalculator(outputFile, calculator);
@@ -58,28 +45,15 @@ int main()
 			writeCalculator(outputFile, calculator);
 		}
 
-		calculator.continueLikeMainTask(task);
-
-		writeString(outputFile, std::to_string(stage++) + ". Переход к основной задаче:\n");
-		writeCalculator(outputFile, calculator);
-		while (calculator.oneCalcStep()) {
-			writeCalculator(outputFile, calculator);
-		}
-
-		writeCalculatorResult(outputFile, calculator, startVariablesCount);
+		calculator.continueLikeMainTask();
 	}
-	else {
-		SimplexMethodCalculator calculator(task, false);
-
-		writeString(outputFile, std::to_string(stage++) + ". Решение основной задачи:\n");
+	writeString(outputFile, std::to_string(stage++) + ". Решение основной задачи:\n");
+	writeCalculator(outputFile, calculator);
+	while (calculator.oneCalcStep()) {
 		writeCalculator(outputFile, calculator);
-		while (calculator.oneCalcStep()) {
-			writeCalculator(outputFile, calculator);
-		}
-
-		writeCalculatorResult(outputFile, calculator, startVariablesCount);
 	}
-	//writeLinearTask(outputFile, task, std::to_string(stage++) + ". Ответ:");
+
+	writeCalculatorResult(outputFile, calculator, startVariablesCount, reversed);
 
 	std::cout << "Нажмите любую клавишу, чтобы закрыть это окно…";
 	_getch();

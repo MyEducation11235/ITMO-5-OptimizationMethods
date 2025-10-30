@@ -111,8 +111,9 @@ void LinearTask::setStrivesForMin(bool value)
 void LinearTask::reverseStrives()
 {
 	setStrivesForMin(!m_strivesForMin);
-	for (Coef &coef : m_targetFunctionCoefs)
+	for (Coef &coef : m_targetFunctionCoefs) {
 		coef *= -1;
+	}
 }
 
 const std::vector<LinearCondition> &LinearTask::conds() const
