@@ -10,10 +10,8 @@ int main()
 	std::string inputFile;
 
 	if (inputFile.empty()) {
-		std::cout << "Ведите название исходного файла (относительно папки ./input/): ";
-		while (inputFile.empty()) {
-			std::cin >> inputFile;
-		}
+		std::cout << "Ведите название исходного файла (относительно папки ./input/): ";		
+		std::cin >> inputFile;
 		if (inputFile.find(".txt") == -1)
 			inputFile += ".txt";
 	}

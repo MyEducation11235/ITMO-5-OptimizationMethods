@@ -1,5 +1,11 @@
 .vs/
-Debug/
 *.vcxproj*
+Lab?/Debug/*
+!Lab?/Debug/Lab1.exe
+!Lab?/Debug/input/
+!Lab?/Debug/output/
+Lab?/Debug/output/*
+!Lab?/Debug/output/main.txt
+Lab?/Lab?/Debug/*
 Lab?/Lab?/input/
 Lab?/Lab?/output/
