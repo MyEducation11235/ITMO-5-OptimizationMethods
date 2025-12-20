@@ -9,6 +9,13 @@ using namespace std;
 using P = long double;
 using P = long double;
 
+#define CheckVar(var) if(var != other.var){return var < other.var;}
+//#define CheckVarF(var) if(!areEqual(var, other.var)){return var < other.var;}
+
+bool areEqual(P a, P b, P epsilon = 1e-3) {
+	return std::abs(a - b) < epsilon;
+}
+
 struct St
 {
 	P a;
@@ -22,8 +29,6 @@ struct St
 	//		+ (P)c_cost * (c - other.c);
 	//}
 	bool operator<(const St &other) const {
-#define CheckVar(var) if(var != other.var){return var < other.var;}
-
 		CheckVar(a);
 		CheckVar(b);
 		CheckVar(c);
@@ -48,6 +53,13 @@ struct Act {
 	P aAct = 1;
 	P bAct = 1;
 	P cAct = 1;
+
+	bool operator<(const Act &other) const {
+		CheckVar(aAct);
+		CheckVar(bAct);
+		CheckVar(cAct);
+		return false;
+	}
 
 	static const P Sell;
 	static const P Nothing;
@@ -92,6 +104,8 @@ vector<vector<P>> rc;
 
 vector<map<St, ActAndRes>> m;
 
+vector<multimap<std::pair<St, Act>, St>> ways;
+
 P calcAllAct(int n, St st);
 
 P calc(int n, St st, Act act) {
@@ -111,6 +125,7 @@ P calc(int n, St st, Act act) {
 		nSt.cash = nStCash;
 
 		res += p[n][k] * calcAllAct(n + 1, nSt);
+		ways[n].insert({ {st, act}, nSt });
 	}
 
 	return res;
@@ -171,6 +186,8 @@ int main()
 
 	m.resize(N);
 
+	ways.resize(N);
+
 	for (size_t i = 0; i < M; i++)
 	{
 		for (size_t j = 0; j < N; j++)
@@ -217,12 +234,37 @@ int main()
 	cout << "Expected profit:" << expectedResult - startSt.result() << endl;
 
 	cout << "\nOptimal strategy\n";
+	vector<map<St, ActAndRes>::iterator> toShow;
+	toShow.push_back(m[0].begin());
 	for (size_t n = 0; n < N; n++)
 	{
 		cout << "At stage " << n + 1 << ':' << endl;
-		for (const auto& option : m[n]) {
-			cout << "If " << option.first << " do " << option.second << endl;
+
+		vector<map<St, ActAndRes>::iterator> nextToShow;
+		for (const auto it : toShow) {
+			cout << "If " << it->first << " do " << it->second << endl;
+			auto range = ways[n].equal_range({ it->first, it->second.act });
+			for (auto next = range.first; next != range.second; ++next) {
+				if (n + 1 < N)
+					nextToShow.push_back(m[n + 1].find(next->second));
+			}
 		}
+		toShow = std::move(nextToShow);
+
+		//for (auto it = m[n].begin(); it != m[n].end(); ++it) {
+		//	if (parentsIds.count(it->first.parentId))
+		//		toShow.push_back(it);
+		//}
+		//parentsIds.clear();
+
+		//sort(
+		//	toShow.begin(),
+		//	toShow.end(),
+		//	[](const map<St, ActAndRes>::iterator l, const map<St, ActAndRes>::iterator r) {
+		//		return l->first.id < r->first.id;
+		//	}
+		//);
+
 		cout << endl;
 	}
 
