@@ -23,11 +23,6 @@ struct St
 	P c;
 	P cash;
 
-	//P operator-(const S &other) const {
-	//	return (P)a_cost * (a - other.a)
-	//		+ (P)b_cost * (b - other.b)
-	//		+ (P)c_cost * (c - other.c);
-	//}
 	bool operator<(const St &other) const {
 		CheckVar(a);
 		CheckVar(b);
@@ -40,12 +35,9 @@ struct St
 	P result() const {
 		return a + b + c + cash;
 	}
-
-	//const St *parent = nullptr;
 };
 std::ostream &operator<< (std::ostream &os, const St &st) {
 	os << "St={ " << st.a << ' ' << st.b << ' ' << st.c << ' ' << st.cash << " }";
-	//os << s.a_cost << '\t' << s.b_cost << '\t' << s.c_cost << endl;
 	return os;
 }
 
@@ -253,20 +245,6 @@ int main()
 			}
 		}
 		toShow = std::move(nextToShow);
-
-		//for (auto it = m[n].begin(); it != m[n].end(); ++it) {
-		//	if (parentsIds.count(it->first.parentId))
-		//		toShow.push_back(it);
-		//}
-		//parentsIds.clear();
-
-		//sort(
-		//	toShow.begin(),
-		//	toShow.end(),
-		//	[](const map<St, ActAndRes>::iterator l, const map<St, ActAndRes>::iterator r) {
-		//		return l->first.id < r->first.id;
-		//	}
-		//);
 
 		cout << endl;
 	}
