@@ -224,8 +224,8 @@ int main()
 
 	P expectedResult = calcAllAct(0, startSt);
 
-	cout << "Expected sum:" << expectedResult << endl;
-	cout << "Expected profit:" << expectedResult - startSt.result() << endl;
+	cout << "Expected sum: " << expectedResult << endl;
+	cout << "Expected profit: " << expectedResult - startSt.result() << endl;
 
 	cout << "\nOptimal strategy\n";
 	vector<map<St, ActAndRes>::iterator> toShow;

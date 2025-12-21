@@ -130,8 +130,8 @@ float calcAllAct(int n, St st) {
 
   ```
 Sart sum: 1900
-Expected sum:2057.83
-Expected profit:157.827
+Expected sum: 2057.83
+Expected profit: 157.827
 
 Optimal strategy
 At stage 1:
