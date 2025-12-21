@@ -1,0 +1,28 @@
+@startuml
+class St {
+  + a : float
+  + b : float
+  + c : float
+  + cash : float
+  + operator<(other : const St&) : bool
+  + resultSumm() : float
+}
+
+class Act {
+  + aAct : float = 1
+  + bAct : float = 1
+  + cAct : float = 1
+  + {static} Sell : const float = 0.75
+  + {static} Nothing : const float = 1
+  + {static} Buy : const float = 1.25
+  + {static} AllAct : const set<float> = {Sell, Nothing, Buy}
+  + operator<(other : const Act&) : bool
+}
+
+class ActAndRes {
+  + act : Act
+  + finalResult : float = 0
+}
+
+Act --> ActAndRes : используется в
+@enduml
