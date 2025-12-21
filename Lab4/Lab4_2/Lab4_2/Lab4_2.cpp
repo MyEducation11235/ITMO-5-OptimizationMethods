@@ -125,7 +125,9 @@ P calc(int n, St st, Act act) {
 		nSt.cash = nStCash;
 
 		res += p[n][k] * calcAllAct(n + 1, nSt);
-		ways[n].insert({ {st, act}, nSt });
+		if (n + 1 < N) {
+			ways[n].insert({ {st, act}, nSt });
+		}
 	}
 
 	return res;
@@ -243,10 +245,11 @@ int main()
 		vector<map<St, ActAndRes>::iterator> nextToShow;
 		for (const auto it : toShow) {
 			cout << "If " << it->first << " do " << it->second << endl;
-			auto range = ways[n].equal_range({ it->first, it->second.act });
-			for (auto next = range.first; next != range.second; ++next) {
-				if (n + 1 < N)
+			if (n + 1 < N) {
+				auto range = ways[n].equal_range({ it->first, it->second.act });
+				for (auto next = range.first; next != range.second; ++next) {
 					nextToShow.push_back(m[n + 1].find(next->second));
+				}
 			}
 		}
 		toShow = std::move(nextToShow);
